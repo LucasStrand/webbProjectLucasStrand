@@ -1,37 +1,39 @@
-<div class= "block">
-        <h1>Frequently asked questions</h1>
-        {{#if dbError}}
-            <p>Oops! Something went wrong :(</p>
-        {{else}}
-            {{#if faq}}
-                {{!-- <p>id: {{faq.id}}</p> --}}
-                <p>question: {{faq.question}}</p>
-                {{#if faq.answer}}
-                    <p>answer: {{faq.answer}}</p>
+<section class="hero is-warning">
+    <div class="hero-body">
+        <div class="container">
+            <div class="block">
+                <h1 class="title">FAQ</h1>
+                {{#if dbError}}
+                <p>Oops! Something went wrong :(</p>
                 {{else}}
-                    <p>This question has no answer yet</p>
+                {{#if faq}}
+                <h2 class="subtitle">Q: {{faq.question}}</h2>
+                {{#if faq.answer}}
+                <h2 class="subtitle">A: {{faq.answer}}</h2>
+                {{else}}
+                <h2 class="subtitle">A: Currently, this question is yet to be answered.</h2>
                 {{/if}}
-                <p>date: {{faq.date}}</p>
+                <p class="content is-small">Date: {{faq.date}}</p>
                 {{#if isLoggedIn}}
-                    <a href="/updatefaq/{{faq.id}}">answer/update question</a>
-                    <form action="/deletefaq/{{faq.id}}" method="POST">
-                    <button class="btn btn-primary input-group-btn">Delete</button></form>
+                <div class="columns">
+                    <div class="column">
+                        <form action="/deletefaq/{{faq.id}}" method="POST">
+                        <a class="button is-dark" href="/updatefaq/{{faq.id}}">answer/update question</a>
+                            <input class="button is-danger " type="submit" value="Delete">
+
+                    </div>
+                </div>
+
                 {{/if}}
 
-            {{else}}
+                {{else}}
                 <p> That question dont exsists</p>
-            {{/if}}
-        {{/if}}
+                {{/if}}
+                {{/if}}
 
-
-        <section class="hero is-warning">
-        <div class="hero-body">
-          <div class="container">
-            <h1 class="title">Hero Title</h1>
-            <h2 class="subtitle">Hero Subtitle</h2>
-          </div>
+            </div>
         </div>
-      </section>
+</section>
 
 
 </div>
