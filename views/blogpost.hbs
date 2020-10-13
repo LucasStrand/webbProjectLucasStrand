@@ -1,14 +1,23 @@
-<h1>Blogpost</h1>
-{{#if blogpost}}
-	<p>Title: {{blogpost.title}}</p>
-	<p>Article: {{blogpost.article}}</p>
-	
-	<a href="/updateblogpost/{{blogpost.id}}">Update</a>
-	
-	<form action="/deleteblogpost/{{blogpost.id}}" method="POST">
-		<input type="submit" value="Delete">
-	</form>
-	
-{{else}}
-	<p>No blogpost with that ID exists.</p>
-{{/if}}
+<div class="block">
+  <h1>Blog</h1>
+  {{#if dbError}}
+  <p>Cant display page right now, try again later</p>
+  {{else}}
+  {{#if blogpost}}
+  <img src="{{blogpost.image}}" alt="">
+  <p>Title:{{blogpost.title}}</p>
+  <p>Article: {{blogpost.article}}</p>
+  {{!-- <p>Date: {{blog.date}}</p> --}}
+  {{#if isLoggedIn}}
+  <a href="/updateblogpost/{{blogpost.id}}">Update</a>
+
+  <form action="/deleteblogpost/{{blogpost.id}}" method="POST">
+    <input type="submit" value="Delete">
+  </form>
+  {{/if}}
+
+  {{else}}
+  <p> No blogpost with that ID exists</p>
+  {{/if}}
+  {{/if}}
+</div>
