@@ -246,7 +246,7 @@ app.get("/blogposts", function (request, response) {
         blogposts,
         dbErrorOccurred: false
       }
-      // console.log(model)
+      console.log(model)
       response.render("blogposts.hbs", model)
     }
   })
@@ -255,7 +255,8 @@ app.get("/blogposts", function (request, response) {
 app.get("/blogposts/:id", function (request, response) {
 
   const id = request.params.id
-  const query = "SELECT *FROM blogposts WHERE id =?"
+  console.log(id)
+  const query = "SELECT * FROM blogposts WHERE id =?"
   const values = [id]
 
   db.get(query, values, function (error, blogpost) {
@@ -264,8 +265,10 @@ app.get("/blogposts/:id", function (request, response) {
 
     } else {
       const model = {
-        blogpost
+        blogpost,
+        dbErrorOccurred: false
       }
+      console.log(model)
       response.render("blogpost.hbs", model)
     }
   })
