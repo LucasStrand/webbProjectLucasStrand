@@ -403,7 +403,7 @@ app.get("/updatefaq/:id",function(request,response){
               const model= {
                   faq
               }
-              response.render("updatefaq.hbs", model)
+              response.render("updateFaq.hbs", model)
           }
       })
   }//displaya error meddelande
@@ -434,7 +434,7 @@ app.post("/updatefaq/:id", function(request,response){
                   answer: newanswer
               }
           }
-          response.render("updatefaq.hbs", model)
+          response.render("updateFaq.hbs", model)
       }
 
       const query = `
