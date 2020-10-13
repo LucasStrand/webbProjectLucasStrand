@@ -1,0 +1,88 @@
+HTML CSSResult
+EDIT ON
+.post {
+  position: relative;
+  padding: 20px;
+  flex-basis: auto;
+}
+
+.post__category {
+  font-size: .8rem;
+  text-transform: uppercase;
+}
+
+.post__title {
+  font-size: 1.8rem;
+  font-weight: 600;
+  margin: 20px 0 10px;
+}
+
+.post__content {
+  font-size: 1.3rem;
+  margin-bottom: 50px;
+}
+
+.post__category,
+.post__permalink {
+  color: #4a4a4a;
+  text-decoration: underline;
+}
+
+.post__permalink {
+  position: absolute;
+  bottom: 20px;
+}
+
+.fb-auto {
+  flex-basis: auto;
+}
+
+.pink {
+  background: #ffdae0;
+}
+
+.gray {
+  background: #e7f0da;
+}
+
+.green {
+  background: #ddebd0;
+}
+
+.gold {
+  background: #fcf5b6;
+}
+
+.blue {
+  background: #cae9ef;
+}
+
+.red {
+  background: #f8c9c1;
+}
+
+input {
+  font-family: "Oswald", sans-serif;
+}
+.uploader {
+  cursor: pointer !important;
+  position: relative;
+  overflow: hidden;
+  display: inline-block;
+}
+
+.chooseFile {
+  position: absolute;
+  left: 0;
+  top: 0;
+  opacity: 0;
+  padding-left: 200px;
+  margin-right: -200px;
+}
+
+#thumbnail {
+  width: 25%;
+  margin-top: 10px;
+  cursor: pointer;
+  height: auto;
+}

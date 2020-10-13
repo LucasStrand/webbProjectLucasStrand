@@ -1,0 +1,30 @@
+<div class="block">
+    <article class="message is-warning">
+        <div class="message-header">
+            <p></p>
+        </div>
+        <div class="message-body">
+            <p class="content is-medium">
+
+            <div class="block">
+                {{#if dbError}}
+                <p>OOps! Something went wrong, please try again later :(</p>
+                {{else}}
+                <form action="" method="POST">
+                    <div class="column is-half">
+                        <h1 class="title text-has-dark">Submit your question on this page</h1>
+                        <textarea required type="submit" class="textarea is-dark"
+                            placeholder="Ask your questiong here..." name="question"></textarea>
+                        <div class="block">
+                        </div>
+                        <a href="/faq" class="button is-dark">Cancel</a>
+                        <input class="button is-warning" type="submit" value="Submit your question!">
+                    </div>
+                </form>
+                {{/if}}
+            </div>
+
+            </p>
+        </div>
+    </article>
+</div>

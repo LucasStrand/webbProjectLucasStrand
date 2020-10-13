@@ -1,0 +1,32 @@
+<div class="block">
+    <h1 class="title is-1">FAQ</h1>
+    {{#if dbError}}
+        <p>Oops! Something went wronf</p>
+    {{else}}
+        {{#if faq.length}}
+        <ul>
+            {{#each faq}}
+                <li><a href="/faq/{{id}}">{{question}}</a></li>
+            {{/each}}
+        </ul>
+        {{else}}
+            <div class="empty">
+                <div class="empty-icon">
+                    <i class="icon icon-people"></i>
+                </div>
+                <p class="empty-title h5">There are no questions right now</p>
+            </div>
+        {{/if}}
+            <a class="text-dark" href="/create-faq" >Ask a question</a>
+    {{/if}}
+
+</div>
+
+<section class="hero is-warning">
+        <div class="hero-body">
+          <div class="container">
+            <h1 class="title">Hero Title</h1>
+            <h2 class="subtitle">Hero Subtitle</h2>
+          </div>
+        </div>
+      </section>

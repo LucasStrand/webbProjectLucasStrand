@@ -1,0 +1,37 @@
+<div class= "block">
+        <h1>Frequently asked questions</h1>
+        {{#if dbError}}
+            <p>Oops! Something went wrong :(</p>
+        {{else}}
+            {{#if faq}}
+                {{!-- <p>id: {{faq.id}}</p> --}}
+                <p>question: {{faq.question}}</p>
+                {{#if faq.answer}}
+                    <p>answer: {{faq.answer}}</p>
+                {{else}}
+                    <p>This question has no answer yet</p>
+                {{/if}}
+                <p>date: {{faq.date}}</p>
+                {{#if isLoggedIn}}
+                    <a href="/updatefaq/{{faq.id}}">answer/update question</a>
+                    <form action="/deletefaq/{{faq.id}}" method="POST">
+                    <button class="btn btn-primary input-group-btn">Delete</button></form>
+                {{/if}}
+
+            {{else}}
+                <p> That question dont exsists</p>
+            {{/if}}
+        {{/if}}
+
+
+        <section class="hero is-warning">
+        <div class="hero-body">
+          <div class="container">
+            <h1 class="title">Hero Title</h1>
+            <h2 class="subtitle">Hero Subtitle</h2>
+          </div>
+        </div>
+      </section>
+
+
+</div>

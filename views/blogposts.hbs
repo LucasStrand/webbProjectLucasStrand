@@ -1,0 +1,19 @@
+<h1>Blogposts</h1>
+
+
+<section class="section">
+  <div class="container">
+    <!-- grid here -->
+    {{#if blogposts.length}}
+    <ul>
+      {{#each blogposts}}
+      <li><a href="/blogposts/{{id}}">{{title}}</a></li>
+      
+      {{/each}}
+    </ul>
+    {{else}}
+    <p>There are no blogposts</p>
+    {{/if}}
+
+  </div>
+</section>
