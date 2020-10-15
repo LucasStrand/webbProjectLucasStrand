@@ -267,6 +267,12 @@ app.get("/blogposts/:id", function (request, response) {
   const query = "SELECT * FROM blogposts WHERE id =?"
   const values = [id]
 
+  let commentArr = []
+  customElements.forEach(comment =>{
+    if (comments.blogpostID == id){
+      commentsArr.pus(comment)
+    }
+  })
   db.get(query, values, function (error, blogpost) {
     if (error) {
       console.log(error)
