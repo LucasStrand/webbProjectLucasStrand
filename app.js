@@ -24,7 +24,7 @@ db.run(`
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         title TEXT,
         article TEXT,
-        image TEXT
+        image TEXT,
     )
 `)
 
@@ -37,6 +37,13 @@ db.run(`
         )
 `)
 
+db.run(`
+    CREATE TABLE IF NOT EXISTS comments(
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        comment TEXT,
+        blogpostID INTEGER
+        )
+`)
 //set storage engine
 const storage = multer.diskStorage({
   destination: './public/file/',
@@ -72,7 +79,7 @@ app.engine(".hbs", expressHandlebars({
   defaultLayout: "main.hbs"
 }))
 
-function getBlogpostValidationErrors(title, article, image) {
+function getBlogpostValidationErrors(title, article, file) {
   const validationErrors = []
   return validationErrors
 }
@@ -110,11 +117,12 @@ app.get("/createblogpost", function (request, response) {
 })
 
 
+
 //   const title = request.body.title
 //   const article = request.body.article
-//   const image = request.body.image
+//   const file = request.body.file
 
-//   const errors = getBlogpostValidationErrors(title, article, image)
+//   const errors = getBlogpostValidationErrors(title, article, file)
 //   if (!request.session.isLoggedIn) {
 //     errors.push("You have to logged in to do that!")
 //   }
@@ -124,15 +132,15 @@ app.get("/createblogpost", function (request, response) {
 //       errors,
 //       title,
 //       article,
-//       image
+//       file
 //     }
 //     response.render("createblogpost.hbs", model)
 //     return
 //   }
 
 
-//   const query = "INSERT INTO blogposts (title, article, image) VALUES(?, ?, ?)"
-//   const values = [title, article, image]
+//   const query = "INSERT INTO blogposts (title, article, file) VALUES(?, ?, ?)"
+//   const values = [title, article, file]
 //   db.run(query, values, function (error) {
 //     if (error) {
 //       console.log(error)
@@ -142,6 +150,7 @@ app.get("/createblogpost", function (request, response) {
 //   })
 // })
 app.post("/createblogpost", function (request, response) {
+
   upload(request, response, (error) => {
     if (error) {
       console.log(error)
@@ -312,130 +321,131 @@ app.post("/logout", function (request, response) {
   response.redirect("/")
 })
 
-app.get("/create-faq", function (request, response) {
-
+app.get("/create-faq", function(request,response){
+    
   response.render("createFaq.hbs")
 })
 
-app.post("/create-faq", function (request, response) {
+app.post("/create-faq", function(request,response){
   const question = request.body.question
   console.log(question)
-
+  
   const validationError = []
   // if(MIN_NAME_LENGTH <=name.length){
   //     validationError.push("Enter your name.")
   // }
 
   const query = "INSERT INTO faq (question, date) VALUES(?,?)"
-  var date = new Date().toISOString().slice(0, 10)
+  var date = new Date().toISOString().slice(0,10)
   const values = [question, date]
 
-  db.run(query, values, function (error) {
-    if (error) {
-      console.log(error)
-      const model = {
-        dbError: true
+  db.run(query, values, function(error){
+      if(error){
+          console.log(error)
+          const model={
+              dbError:true
+          }
+          response.redirect("/create-faq", model)
+      }else{
+          const model={
+              dbError:false
+          }
+          response.redirect("/faq")//+this.lastID for new order page
       }
-      response.redirect("/create-faq", model)
-    } else {
-      const model = {
-        dbError: false
-      }
-      response.redirect("/faq")//+this.lastID for new order page
-    }
   })
 })
 
-app.get("/faq", function (request, response) {
-  const query = "SELECT * FROM faq ORDER BY id"
-  db.all(query, function (error, faq) {
-    if (error) {
-      console.log(error)
-      const model = {
-        dbError: true
-      }
-    } else {
-      const model =
-      {
-        dbError: false,
-        faq
-      }
-      response.render("faq.hbs", model)
-    }
-  })
+app.get("/faq",function(request,response){
+      const query = "SELECT * FROM faq ORDER BY id"
+      db.all(query, function(error, faq){
+          if(error){
+              console.log(error)
+              const model={
+                  dbError:true
+              }
+          }else
+          {
+              const model = 
+              {
+                  dbError:false,
+                  faq
+              }
+              response.render("faq.hbs", model)
+          }
+      }) 
 })
 
-app.get("/faq/:id", function (request, response) {
+app.get("/faq/:id",function(request,response){
 
-  const id = request.params.id
+      const id = request.params.id
 
-  const query = "SELECT * FROM faq WHERE id = ?"
-  const values = [id]
-  db.get(query, values, function (error, faq) {
-    if (error) {
-      console.log(error)
-      const model = {
-        dbError: true
-      }
-    } else {
-      const model = {
-        dbError: false,
-        faq
-      }
-      response.render("theFaq.hbs", model)
-    }
-  })
+      const query = "SELECT * FROM faq WHERE id = ?"
+      const values = [id]
+      db.get(query, values, function(error, faq){
+          if(error){
+              console.log(error)
+              const model={
+                  dbError:true
+              }
+          }else{
+              const model = {
+                  dbError:false,
+                  faq
+              }
+              response.render("theFaq.hbs", model)
+          } 
+      }) 
 })
 
-app.get("/updatefaq/:id", function (request, response) {
-  if (request.session.isLoggedIn) {
-    const id = request.params.id
+app.get("/updatefaq/:id",function(request,response){
+  if(request.session.isLoggedIn){
+      const id = request.params.id
 
-    const query = "SELECT * FROM faq WHERE id = ?"
-    const values = [id]
-    db.get(query, values, function (error, faq) {
-      if (error) {
-        console.log(error)
-        //TODO display error message
-      } else {
-        const model = {
-          faq
-        }
-        response.render("updateFaq.hbs", model)
-      }
-    })
+      const query = "SELECT * FROM faq WHERE id = ?"
+      const values = [id]
+      db.get(query, values, function(error,faq){
+          if(error){
+              console.log(error)
+              //TODO display error message
+          }else{
+              const model= {
+                  faq
+              }
+              response.render("updateFaq.hbs", model)
+          }
+      })
   }//displaya error meddelande
 })
 
-app.post("/updatefaq/:id", function (request, response) {
+app.post("/updatefaq/:id", function(request,response){
+  
+      const id = request.params.id
+      const newQuestion =request.body.question
+      const newanswer =request.body.answer
 
-  const id = request.params.id
-  const newQuestion = request.body.question
-  const newanswer = request.body.answer
+      const validationError = []
 
-  const validationError = []
-
-  if (!request.session.isLoggedIn) {
-    validationError.push("You have yo login.")
-  }
-
-  // if(MIN_NAME_LENGTH <=newName.length){
-  //     validationError.push("Enter a name.")
-  // }
-
-  if (0 < validationError) {
-    const model = {
-      validationError,
-      faq: {
-        id,
-        question: newQuestion,
-        answer: newanswer
+      if(!request.session.isLoggedIn){
+          validationError.push("You have yo login.")
       }
-    }
-    response.render("updateFaq.hbs", model)
-  }
 
-  const query = `
+      // if(MIN_NAME_LENGTH <=newName.length){
+      //     validationError.push("Enter a name.")
+      // }
+
+      if(0< validationError){
+          const model = {
+              validationError,
+              faq: {
+                  id,
+                  question: newQuestion,
+                  answer: newanswer
+              }
+          }
+          response.render("updateFaq.hbs", model)
+      }
+
+      const query = `
           UPDATE
               faq
           SET
@@ -444,35 +454,36 @@ app.post("/updatefaq/:id", function (request, response) {
           WHERE
               id = ?
       `
-  //console.log(answer)
-  const values = [newQuestion, newanswer, id]
-  db.run(query, values, function (error) {
-    if (error) {
-      console.log(error)
-      //TODO display error message
-    } else {
-      response.redirect("/faq/" + id)
-    }
-  })
+      //console.log(answer)
+      const values =[newQuestion,newanswer, id]
+      db.run(query,values, function(error){
+          if(error){
+              console.log(error)
+              //TODO display error message
+          }else{
+              response.redirect("/faq/"+id)
+          }
+      })
 })
 
-app.post("/deletefaq/:id", function (request, response) {
-  const id = request.params.id
-  if (!request.session.isLoggedIn) {
-    validationError.push("You have yo login.")
-    //create messages in html
-  }
-  const query = "DELETE FROM faq WHERE id = ?"
-  const values = [id]
+app.post("/deletefaq/:id", function(request,response){
+      const id = request.params.id
+      if(!request.session.isLoggedIn){
+          validationError.push("You have yo login.")
+          //create messages in html
+      }
+      const query ="DELETE FROM faq WHERE id = ?"
+      const values = [id]
 
-  db.run(query, values, function (error) {
-    if (error) {
-      console.log(error)
-      //TODO display errorr message
-    } else {
-      response.redirect("/faq")
-    }
-  })
+      db.run(query, values, function(error){
+          if(error){
+              console.log(error)
+              //TODO display errorr message
+          }else{
+              response.redirect("/faq")
+          }
+      })
 })
+
 
 app.listen(3000)

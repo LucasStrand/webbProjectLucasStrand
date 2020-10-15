@@ -1,23 +1,86 @@
 <div class="block">
-  <h1>Blog</h1>
-  {{#if dbError}}
+  <article class="message is-warning">
+    <div class="message-header">
+      <p class="title is-4">{{blogpost.title}}</p>
+    </div>
+    <div class="message-body">
+      <p class="content is-medium">
+        <div class="card">
+  <div class="card-image">
+    <figure class="image is-4by3">
+      {{#if dbError}}
   <p>Cant display page right now, try again later</p>
   {{else}}
-  {{#if blogpost}}
-  <img src="{{blogpost.image}}" alt="something when trying to display the image">
-  <p>Title:{{blogpost.title}}</p>
-  <p>Article: {{blogpost.article}}</p>
-  {{!-- <p>Date: {{blog.date}}</p> --}}
-  {{#if isLoggedIn}}
+      {{#if blogpost}}
+      <img src="https://www.history.com/.image/t_share/MTU4NTE1Nzg2MDcwMTA3Mzk0/beer-oldest.jpg" alt="something when trying to display the image">
+    </figure>
+  </div>
+  <div class="card-content">
+    <div class="media">
+      <div class="media-left">
+        <figure class="image is-48x48">
+          <img src="https://pngimg.com/uploads/shrek/shrek_PNG3.png" alt="Placeholder image">
+        </figure>
+      </div>
+      <div class="media-content">
+        <p class="title is-4">{{blogpost.title}}</p>
+        <p class="subtitle is-6">Lucas Strand</p>
+      </div>
+    </div>
+
+    <div class="content">
+      {{blogpost.article}}
+      <br>
+      <time datetime="2016-1-1">11:09 PM - 1 Jan 2016</time>
+      {{#if isLoggedIn}}
   <a href="/updateblogpost/{{blogpost.id}}">Update</a>
 
   <form action="/deleteblogpost/{{blogpost.id}}" method="POST">
     <input type="submit" value="Delete">
   </form>
   {{/if}}
-
   {{else}}
   <p> No blogpost with that ID exists</p>
   {{/if}}
   {{/if}}
+    </div>
+  </div>
+</div>
+      </p>
+    </div>
+  </article>
+</div>
+
+
+
+<div class="block">
+  <article class="message is-dark">
+    <div class="message-header">
+      <p>Comments</p>
+    </div>
+    <div class="message-body">
+      <p class="content is-medium">
+        <section class="hero is-dark">
+  <div class="hero-body">
+    <div class="container">
+      <h1 class="title">
+      </h1>
+      <h2 class="subtitle">
+        Haha gay post u suck
+      </h2>
+    </div>
+  </div>
+</section>
+      </p>
+    </div>
+  </article>
+</div>
+<div class="columns is-centered">
+  <div class="column is-8">
+    <form action="" method="POST">
+      <textarea type="submit" class="textarea is-dark" placeholder="Add a comment" name="comment"></textarea>
+       <input class="button is-danger" type="submit" value="Post comment">
+  
+    </form>
+  </div>
 </div>
