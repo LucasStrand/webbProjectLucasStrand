@@ -469,7 +469,7 @@ app.post("/updatefaq/:id", function(request,response){
 app.post("/deletefaq/:id", function(request,response){
       const id = request.params.id
       if(!request.session.isLoggedIn){
-          validationError.push("You have yo login.")
+          validationError.push("You have to login.")
           //create messages in html
       }
       const query ="DELETE FROM faq WHERE id = ?"
