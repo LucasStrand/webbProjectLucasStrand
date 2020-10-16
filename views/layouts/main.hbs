@@ -50,9 +50,11 @@
             <a class="navbar-item" href="/about">
               About
             </a>
+            {{#if isLoggedIn}}
             <a class="navbar-item" href="/createblogpost">
               Create Drink-Post!
             </a>
+            {{/if}}
             <a class="navbar-item" href="/contact">
               Contact
             </a>

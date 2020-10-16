@@ -24,7 +24,7 @@ db.run(`
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         title TEXT,
         article TEXT,
-        image TEXT,
+        image TEXT
     )
 `)
 
@@ -153,20 +153,20 @@ app.post("/createblogpost", function (request, response) {
 
   upload(request, response, (error) => {
     if (error) {
-      console.log(error)
+      console.log(error, "1")
     }
     else {
       const title = request.body.title
       const article = request.body.article
-      const image = request.file.image
-      console.log(image)
+      const image = request.file.filename
+      console.log(image) // Prints style.css MUST FIX - Filips notes
 
         const query = ("INSERT INTO blogposts (title, article, image) VALUES (?, ?, ?)")
         const values = [title, article, image]
 
         db.run(query, values, function (error) {
           if (error) {
-            console.log(error)
+            console.log(error, "2")
           }
           else {
             response.redirect('/blogposts/' + this.lastID)
@@ -186,7 +186,7 @@ app.get("/updateblogpost/:id", function (request, response) {
 
   db.get(query, values, function (error, blogpost) {
     if (error) {
-      console.log(error)
+      console.log(error, "3")
     } else {
       const model = {
         blogpost
@@ -219,7 +219,7 @@ app.post("/updateblogpost/:id", function (request, response) {
     return
   }
 
-  const query = `
+  const query = (`
   UPDATE
   blogposts
   SET
@@ -227,12 +227,12 @@ app.post("/updateblogpost/:id", function (request, response) {
   article = ?
   WHERE
   id=?
-  `
+  `)
   const values = [newTitle, newArticle, id]
 
   db.run(query, values, function (error) {
     if (error) {
-      console.log(error)
+      console.log(error, "4")
     } else {
       response.redirect("/blogposts/" + id)
     }
@@ -244,7 +244,7 @@ app.get("/blogposts", function (request, response) {
   const query = "SELECT * FROM blogposts ORDER BY id"
   db.all(query, function (error, blogposts) {
     if (error) {
-      console.log(error)
+      console.log(error, "5")
       const model = {
         dbErrorOCcurred: true
       }
@@ -263,31 +263,60 @@ app.get("/blogposts", function (request, response) {
 app.get("/blogposts/:id", function (request, response) {
 
   const id = request.params.id
-  console.log(id)
-  const query = "SELECT * FROM blogposts WHERE id =?"
+  
+  const commentQuery = "SELECT * FROM comments"
   const values = [id]
-
-  let commentArr = []
-  customElements.forEach(comment =>{
-    if (comments.blogpostID == id){
-      commentsArr.pus(comment)
+  //let commentArr = []
+  var postComments = []
+  
+  db.all(commentQuery, function (err, comments) {
+    if (err) {
+      console.log(err)
+    } else {
+      for (let i = 0; i < comments.length; i++) {
+        if (comments[i].blogpostID == id) {
+          postComments.push(comments[i])
+        }
+      }
     }
   })
-  db.get(query, values, function (error, blogpost) {
+  const blogQuery = "SELECT * FROM blogposts WHERE id =?"
+  
+  db.get(blogQuery, values, function (error, blogpost) {
     if (error) {
-      console.log(error)
+      console.log(error, "6")
 
     } else {
       const model = {
         blogpost,
-        dbErrorOccurred: false
+        dbErrorOccurred: false,
+        postComments
       }
-      console.log(model)
       response.render("blogpost.hbs", model)
     }
   })
 })
+// When recieving comments
+app.post("/blogpost/:id", function (request, response) {
 
+  const id = request.params.id
+  const comment = request.body.comment
+
+  const query = "INSERT INTO comments (comment, blogpostID) VALUES(?,?)"
+  const values = [comment, id]
+
+  db.run(query, values, function (error) {
+    if (error) {
+
+      console.log(error, "7")
+
+    } else {
+      console.log('Inserted comment successfully')
+      response.redirect("/blogposts/"+id)
+    }
+  })
+
+})
 app.post("/deleteblogpost/:id", function (request, response) {
 
   const id = request.params.id
@@ -298,7 +327,7 @@ app.post("/deleteblogpost/:id", function (request, response) {
   db.run(query, values, function (error) {
     if (error) {
 
-      console.log(error)
+      console.log(error, "7")
 
     } else {
       response.redirect("/blogposts")
@@ -347,7 +376,7 @@ app.post("/create-faq", function(request,response){
 
   db.run(query, values, function(error){
       if(error){
-          console.log(error)
+          console.log(error, "8")
           const model={
               dbError:true
           }
@@ -365,7 +394,7 @@ app.get("/faq",function(request,response){
       const query = "SELECT * FROM faq ORDER BY id"
       db.all(query, function(error, faq){
           if(error){
-              console.log(error)
+              console.log(error, "9")
               const model={
                   dbError:true
               }
@@ -389,7 +418,7 @@ app.get("/faq/:id",function(request,response){
       const values = [id]
       db.get(query, values, function(error, faq){
           if(error){
-              console.log(error)
+              console.log(error, "10")
               const model={
                   dbError:true
               }
@@ -411,7 +440,7 @@ app.get("/updatefaq/:id",function(request,response){
       const values = [id]
       db.get(query, values, function(error,faq){
           if(error){
-              console.log(error)
+              console.log(error, "11")
               //TODO display error message
           }else{
               const model= {
@@ -464,7 +493,7 @@ app.post("/updatefaq/:id", function(request,response){
       const values =[newQuestion,newanswer, id]
       db.run(query,values, function(error){
           if(error){
-              console.log(error)
+              console.log(error, "12")
               //TODO display error message
           }else{
               response.redirect("/faq/"+id)
@@ -483,7 +512,7 @@ app.post("/deletefaq/:id", function(request,response){
 
       db.run(query, values, function(error){
           if(error){
-              console.log(error)
+              console.log(error, "13")
               //TODO display errorr message
           }else{
               response.redirect("/faq")
