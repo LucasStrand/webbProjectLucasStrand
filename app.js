@@ -250,6 +250,7 @@ app.get("/blogposts", function (request, response) {
       }
       response.render("blogposts.hbs", model)
     } else {
+      blogposts.reverse()
       const model = {
         blogposts,
         dbErrorOccurred: false
