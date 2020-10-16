@@ -267,7 +267,7 @@ app.get("/blogposts/:id", function (request, response) {
   
   const commentQuery = "SELECT * FROM comments"
   const values = [id]
-  //let commentArr = []
+  //let commentArr = [] bajskoirv
   var postComments = []
   
   db.all(commentQuery, function (err, comments) {
