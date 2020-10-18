@@ -2,46 +2,46 @@
     <div class="message-header">
     </div>
     <div class="message-body">
-      <p>
-<div class="block">
-    <h1 class="title is-1">FAQ</h1>
-    <p class="content is-medium">Here you can ask questions and wait for an answer.</p>
-    <a class="button is-warning" href="/create-faq">Ask a question</a>
-    {{#if dbError}}
-    <p>Oops! Something went wronf</p>
-    {{else}}
-    {{#if faq.length}}
-    <ul>
-        <div class="container has-text-centered">
-            <div class="columns is-mobile is-centered">
-                <div class="column is-5">
-                    {{#each faq}}
-                    <div class="card">
-                        <div class="card-content">
-                            <p class="title">
-                                <a href="/faq/{{id}}">{{question}}</a>
-                            </p>
-                        </div>
-                    </div>
-                    {{/each}}
-    </ul>
-    {{else}}
-    <div class="empty">
-        <div class="empty-icon">
-            <i class="icon icon-people"></i>
+        <p>
+        <div class="block">
+            <h1 class="title is-1">FAQ</h1>
+            <p class="content is-medium">Here you can ask questions and wait for an answer.</p>
+            <a class="button is-warning" href="/create-faq">Ask a question</a>
+            {{#if dbError}}
+            <p>Oops! Something went wronf</p>
+            {{else}}
+            {{#if faq.length}}
+            <ul>
+                <div class="container has-text-centered">
+                    <div class="columns is-mobile is-centered">
+                        <div class="column is-5">
+                            {{#each faq}}
+                            <div class="card">
+                                <div class="card-content">
+                                    <p class="title">
+                                        <a href="/faq/{{id}}">{{question}}</a>
+                                    </p>
+                                </div>
+                            </div>
+                            {{/each}}
+            </ul>
+            {{else}}
+            <div class="empty">
+                <div class="empty-icon">
+                    <i class="icon icon-people"></i>
+                </div>
+                <p class="empty-title h5">There are no questions right now</p>
+            </div>
+            {{/if}}
+
+            {{/if}}
         </div>
-        <p class="empty-title h5">There are no questions right now</p>
+
     </div>
-    {{/if}}
-
-    {{/if}}
-</div>
-
-</div>
-</div>
-
-</div>
-      </p>
     </div>
-  </article>
+
+    </div>
+    </p>
+    </div>
+</article>
 </div>

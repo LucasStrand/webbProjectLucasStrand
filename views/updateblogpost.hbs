@@ -1,32 +1,33 @@
 <div class="block">
   <div class="cloumns">
     <div class="column is-three-quarters">
-        <h1 class="title">Update drink-post! </h1>
+      <h1 class="title">Update drink-post! </h1>
 
 
 
-        <div class="block">
-      <form action="" method="POST">
-        <div class="field">
-          <label class="label">Title</label>
-          <input required type="text" class="input is-dark" placeholder="Enter title" name="title" value="{{blogpost.title}}">
-        </div>
-
-        
-        <div class="field">
-          <label class="label">Article</label>
-          <p class="control">
-            <textarea required type="submit" class="textarea is-dark" name="article">{{blogpost.article}}</textarea>
-          </p>
-          <div class="block">
+      <div class="block">
+        <form action="" method="POST">
+          <div class="field">
+            <label class="label">Title</label>
+            <input required type="text" class="input is-dark" placeholder="Enter title" name="title"
+              value="{{blogpost.title}}">
           </div>
-                <a href="/" class="button is-dark">Cancel</a>
-                <input class="button is-warning" type="submit" value="Update"> 
-                <input type="hidden" name="_csrf" value="{{token}}">
-      </form>
+
+
+          <div class="field">
+            <label class="label">Article</label>
+            <p class="control">
+              <textarea required type="submit" class="textarea is-dark" name="article">{{blogpost.article}}</textarea>
+            </p>
+            <div class="block">
+            </div>
+            <a href="/" class="button is-dark">Cancel</a>
+            <input class="button is-warning" type="submit" value="Update">
+            <input type="hidden" name="_csrf" value="{{token}}">
+        </form>
+      </div>
     </div>
   </div>
-</div>
 
 </div>
 
