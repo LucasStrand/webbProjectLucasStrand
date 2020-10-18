@@ -6,7 +6,7 @@
 
 
       <div class="block">
-        <form action="" method="POST" enctype='multipart/form-data'>
+        <form action="/createblogpost/?_csrf={{token}}" method="POST" enctype='multipart/form-data'>
           <div class="field">
             <label class="label">Title</label>
             <input required type="text" class="input is-dark" placeholder="Enter title" name="title">
@@ -36,6 +36,7 @@
             </div>
             <a href="/" class="button is-dark">Cancel</a>
             <input class="button is-warning" type="submit" value="Create Article">
+          </div>
         </form>
       </div>
     </div>

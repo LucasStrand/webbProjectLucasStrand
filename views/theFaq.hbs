@@ -18,9 +18,10 @@
                 <div class="columns">
                     <div class="column">
                         <form action="/deletefaq/{{faq.id}}" method="POST">
-                        <a class="button is-dark" href="/updatefaq/{{faq.id}}">answer/update question</a>
+                            <a class="button is-dark" href="/updatefaq/{{faq.id}}">answer/update question</a>
                             <input class="button is-danger " type="submit" value="Delete">
-
+                            <input type="hidden" name="_csrf" value="{{token}}">
+                        </form>
                     </div>
                 </div>
 

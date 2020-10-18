@@ -37,6 +37,7 @@
 
             <form action="/deleteblogpost/{{blogpost.id}}" method="POST">
               <input type="submit" value="Delete">
+              <input type="hidden" name="_csrf" value="{{token}}">
             </form>
             {{/if}}
             {{else}}
@@ -65,7 +66,7 @@
           <form action="/blogpost/{{blogpost.id}}" method="POST">
             <textarea type="submit" class="textarea is-dark" placeholder="Add a comment" name="comment"></textarea>
             <input class="button is-danger" type="submit" value="Post comment">
-
+            <input type="hidden" name="_csrf" value="{{token}}">
           </form>
         </div>
       </div>
@@ -79,10 +80,20 @@
             <h2 class="subtitle">
               {{comment}}
             </h2>
+            {{#if../ isLoggedIn}}
+            <form action="/delete-comment/{{this.id}}" method="POST">
+            <input class="button is-danger" type="submit" value="Delete comment">
+            </form>
+            <form action="/editcomment/{{this.id}}" method="GET">
+              <input class="button is-dark" type="submit" value="Edit comment">
+            </form>
+            {{/if}}
           </div>
         </div>
       </section>
       {{/each}}
+      {{else}}
+      <p>No comments yet! :( Be the first one to comment!</p>
       {{/if}}
       </p>
     </div>

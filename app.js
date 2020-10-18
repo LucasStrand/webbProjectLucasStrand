@@ -1,10 +1,3 @@
-//*******************/:TODO:\************************\\
-//***----validationError för allt-----------------***//
-//***----fixa lite css för blogposts samt FAQ-----***\\
-//***-----------hash passwords--------------------***//
-//******************\:EPIC:/*************************\\
-
-
 const { response, Router, request } = require('express')
 const express = require('express')
 const expressHandlebars = require('express-handlebars')
@@ -14,6 +7,9 @@ const expressSession = require('express-session')
 const SQLiteStore = require('connect-sqlite3')(expressSession)
 const multer = require('multer')
 const path = require('path')
+const bcrypt = require('bcryptjs')
+const token = require('csurf')
+const { parse } = require('path')
 
 
 const db = new sqlite3.Database("my-database.db")
@@ -57,6 +53,8 @@ const upload = multer({
   limits: { fileSize: 9000000 }
 }).single('image')
 
+const csrfProtection = token({ cookie: false})
+const parseForm = bodyParser.urlencoded ({extended: false})
 
 const app = express()
 
@@ -71,9 +69,7 @@ app.use(expressSession({
 }))
 
 const adminUsername = "admin"
-const adminPassword = "abc123"
-
-
+const adminPassword = "$2a$10$.WNk7GjUq5cBvbWbuXVO5Ok8ksPm4y5TTLZOY3GajRXC.ECn6PyZ6"
 
 app.engine(".hbs", expressHandlebars({
   defaultLayout: "main.hbs"
@@ -97,59 +93,26 @@ app.use(function (request, response, next) {
   next()
 })
 
-app.get("/", function (request, response) {
-  response.render("start.hbs")
+app.get("/", csrfProtection, function (request, response) {
+  response.render("start.hbs", {token: request.csrfToken()})
 })
-app.get("/about", function (request, response) {
-  response.render("about.hbs")
+app.get("/about", csrfProtection, function (request, response) {
+  response.render("about.hbs", {token: request.csrfToken()})
 })
-app.get("/contact", function (request, response) {
-  response.render("contact.hbs")
+app.get("/contact", csrfProtection, function (request, response) {
+  response.render("contact.hbs", {token: request.csrfToken()})
 })
 
 
-app.get("/createblogpost", function (request, response) {
+app.get("/createblogpost", csrfProtection, function (request, response) {
   if (request.session.isLoggedIn) {
-    response.render("createblogpost.hbs")
+    response.render("createblogpost.hbs", {token: request.csrfToken()})
   } else {
     response.redirect("/login")
   }
 })
 
-
-
-//   const title = request.body.title
-//   const article = request.body.article
-//   const file = request.body.file
-
-//   const errors = getBlogpostValidationErrors(title, article, file)
-//   if (!request.session.isLoggedIn) {
-//     errors.push("You have to logged in to do that!")
-//   }
-
-//   if (0 < errors.length) {
-//     const model = {
-//       errors,
-//       title,
-//       article,
-//       file
-//     }
-//     response.render("createblogpost.hbs", model)
-//     return
-//   }
-
-
-//   const query = "INSERT INTO blogposts (title, article, file) VALUES(?, ?, ?)"
-//   const values = [title, article, file]
-//   db.run(query, values, function (error) {
-//     if (error) {
-//       console.log(error)
-//     } else {
-//       response.redirect("blogposts/" + this.lastID)
-//     }
-//   })
-// })
-app.post("/createblogpost", function (request, response) {
+app.post("/createblogpost", csrfProtection, parseForm, function (request, response) {
 
   upload(request, response, (error) => {
     if (error) {
@@ -159,7 +122,6 @@ app.post("/createblogpost", function (request, response) {
       const title = request.body.title
       const article = request.body.article
       const image = request.file.filename
-      console.log(image) // Prints style.css MUST FIX - Filips notes
 
         const query = ("INSERT INTO blogposts (title, article, image) VALUES (?, ?, ?)")
         const values = [title, article, image]
@@ -178,7 +140,7 @@ app.post("/createblogpost", function (request, response) {
 
 
 
-app.get("/updateblogpost/:id", function (request, response) {
+app.get("/updateblogpost/:id", csrfProtection, function (request, response) {
   const id = request.params.id
 
   const query = "SELECT * FROM blogposts WHERE id = ?"
@@ -189,14 +151,15 @@ app.get("/updateblogpost/:id", function (request, response) {
       console.log(error, "3")
     } else {
       const model = {
-        blogpost
+        blogpost,
+        token: request.csrfToken()
       }
       response.render("updateblogpost.hbs", model)
     }
   })
 })
 
-app.post("/updateblogpost/:id", function (request, response) {
+app.post("/updateblogpost/:id", csrfProtection, parseForm, function (request, response) {
   const id = request.params.id
   const newTitle = request.body.title
   const newArticle = request.body.article
@@ -240,7 +203,7 @@ app.post("/updateblogpost/:id", function (request, response) {
 })
 
 
-app.get("/blogposts", function (request, response) {
+app.get("/blogposts", csrfProtection, function (request, response) {
   const query = "SELECT * FROM blogposts ORDER BY id"
   db.all(query, function (error, blogposts) {
     if (error) {
@@ -253,7 +216,8 @@ app.get("/blogposts", function (request, response) {
       blogposts.reverse()
       const model = {
         blogposts,
-        dbErrorOccurred: false
+        dbErrorOccurred: false,
+        token: request.csrfToken()
       }
       console.log(model)
       response.render("blogposts.hbs", model)
@@ -261,13 +225,12 @@ app.get("/blogposts", function (request, response) {
   })
 })
 
-app.get("/blogposts/:id", function (request, response) {
+app.get("/blogposts/:id", csrfProtection, function (request, response) {
 
   const id = request.params.id
   
   const commentQuery = "SELECT * FROM comments"
   const values = [id]
-  //let commentArr = [] bajskoirv
   var postComments = []
   
   db.all(commentQuery, function (err, comments) {
@@ -291,14 +254,15 @@ app.get("/blogposts/:id", function (request, response) {
       const model = {
         blogpost,
         dbErrorOccurred: false,
-        postComments
+        postComments,
+        token: request.csrfToken()
       }
       response.render("blogpost.hbs", model)
     }
   })
 })
 // When recieving comments
-app.post("/blogpost/:id", function (request, response) {
+app.post("/blogpost/:id", csrfProtection, parseForm, function (request, response) {
 
   const id = request.params.id
   const comment = request.body.comment
@@ -318,7 +282,7 @@ app.post("/blogpost/:id", function (request, response) {
   })
 
 })
-app.post("/deleteblogpost/:id", function (request, response) {
+app.post("/deleteblogpost/:id", csrfProtection, parseForm, function (request, response) {
 
   const id = request.params.id
 
@@ -336,14 +300,16 @@ app.post("/deleteblogpost/:id", function (request, response) {
   })
 
 })
-app.get("/login", function (request, response) {
-  response.render("login.hbs")
+app.get("/login", csrfProtection, function (request, response) {
+  response.render("login.hbs", {token: request.csrfToken()})
 })
-app.post("/login", function (request, response) {
+app.post("/login", csrfProtection, parseForm, function (request, response) {
   const enteredUsername = request.body.username
   const enteredPassword = request.body.password
 
-  if (enteredUsername == adminUsername && enteredPassword == adminPassword) {
+  const checkPassword = bcrypt.compareSync(enteredPassword, adminPassword)
+
+  if (enteredUsername == adminUsername && checkPassword) {
     //Login
     request.session.isLoggedIn = true
     response.redirect("/")
@@ -352,24 +318,21 @@ app.post("/login", function (request, response) {
   }
 })
 
-app.post("/logout", function (request, response) {
+app.post("/logout", csrfProtection, parseForm, function (request, response) {
   request.session.isLoggedIn = false
   response.redirect("/")
 })
 
-app.get("/create-faq", function(request,response){
+app.get("/create-faq", csrfProtection, function(request,response){
     
-  response.render("createFaq.hbs")
+  response.render("createFaq.hbs", {token: request.csrfToken()})
 })
 
-app.post("/create-faq", function(request,response){
+app.post("/create-faq", csrfProtection, parseForm, function(request,response){
   const question = request.body.question
   console.log(question)
   
   const validationError = []
-  // if(MIN_NAME_LENGTH <=name.length){
-  //     validationError.push("Enter your name.")
-  // }
 
   const query = "INSERT INTO faq (question, date) VALUES(?,?)"
   var date = new Date().toISOString().slice(0,10)
@@ -384,14 +347,15 @@ app.post("/create-faq", function(request,response){
           response.redirect("/create-faq", model)
       }else{
           const model={
-              dbError:false
+              dbError:false,
+              token: request.csrfToken()
           }
-          response.redirect("/faq")//+this.lastID for new order page
+          response.redirect("/faq")
       }
   })
 })
 
-app.get("/faq",function(request,response){
+app.get("/faq", csrfProtection, function(request,response){
       const query = "SELECT * FROM faq ORDER BY id"
       db.all(query, function(error, faq){
           if(error){
@@ -404,14 +368,15 @@ app.get("/faq",function(request,response){
               const model = 
               {
                   dbError:false,
-                  faq
+                  faq,
+                  token: request.csrfToken()
               }
               response.render("faq.hbs", model)
           }
       }) 
 })
 
-app.get("/faq/:id",function(request,response){
+app.get("/faq/:id", csrfProtection, function(request,response){
 
       const id = request.params.id
 
@@ -426,14 +391,15 @@ app.get("/faq/:id",function(request,response){
           }else{
               const model = {
                   dbError:false,
-                  faq
+                  faq,
+                  token: request.csrfToken()
               }
               response.render("theFaq.hbs", model)
           } 
       }) 
 })
 
-app.get("/updatefaq/:id",function(request,response){
+app.get("/updatefaq/:id", csrfProtection, function(request,response){
   if(request.session.isLoggedIn){
       const id = request.params.id
 
@@ -442,18 +408,18 @@ app.get("/updatefaq/:id",function(request,response){
       db.get(query, values, function(error,faq){
           if(error){
               console.log(error, "11")
-              //TODO display error message
           }else{
               const model= {
-                  faq
+                  faq,
+                  token: request.csrfToken()
               }
               response.render("updateFaq.hbs", model)
           }
       })
-  }//displaya error meddelande
+  }
 })
 
-app.post("/updatefaq/:id", function(request,response){
+app.post("/updatefaq/:id", csrfProtection, parseForm, function(request,response){
   
       const id = request.params.id
       const newQuestion =request.body.question
@@ -464,10 +430,6 @@ app.post("/updatefaq/:id", function(request,response){
       if(!request.session.isLoggedIn){
           validationError.push("You have yo login.")
       }
-
-      // if(MIN_NAME_LENGTH <=newName.length){
-      //     validationError.push("Enter a name.")
-      // }
 
       if(0< validationError){
           const model = {
@@ -490,23 +452,21 @@ app.post("/updatefaq/:id", function(request,response){
           WHERE
               id = ?
       `
-      //console.log(answer)
+
       const values =[newQuestion,newanswer, id]
       db.run(query,values, function(error){
           if(error){
               console.log(error, "12")
-              //TODO display error message
           }else{
               response.redirect("/faq/"+id)
           }
       })
 })
 
-app.post("/deletefaq/:id", function(request,response){
+app.post("/deletefaq/:id", csrfProtection, parseForm, function(request,response){
       const id = request.params.id
       if(!request.session.isLoggedIn){
           validationError.push("You have to login.")
-          //create messages in html
       }
       const query ="DELETE FROM faq WHERE id = ?"
       const values = [id]
@@ -514,12 +474,88 @@ app.post("/deletefaq/:id", function(request,response){
       db.run(query, values, function(error){
           if(error){
               console.log(error, "13")
-              //TODO display errorr message
           }else{
               response.redirect("/faq")
           }
       })
 })
 
+app.post("/delete-comment/:id",function(request,response){
+  const id = request.params.id
+  const queryDelete="DELETE FROM comments WHERE id=?"
+  const values=[id]
+  db.run(queryDelete,values,function(error){
+      if(error){
+          console.log(error)
+      }else{
+         response.redirect("/blogposts/") 
+      }
+  })
+      
+})
+
+app.get("/editcomment/:id", csrfProtection, parseForm, function(request, response){
+  if(request.session.isLoggedIn){
+    const id = request.params.id
+
+    const query = "SELECT * FROM comments WHERE id = ?"
+    const values = [id]
+    db.get(query, values, function(error,comments){
+        if(error){
+            console.log(error, "11")
+        }else{
+            const model= {
+                comments,
+                token: request.csrfToken()
+            }
+            response.render("editcomment.hbs", model)
+        }
+    })
+}
+
+})
+
+app.post("/editcomment/:id", csrfProtection, parseForm, function(request,response){
+  
+  const id = request.params.id
+  const newComment =request.body.comment
+
+  const validationError = []
+
+  if(!request.session.isLoggedIn){
+      validationError.push("You have yo login.")
+  }
+
+  if(0< validationError){
+      const model = {
+          validationError,
+          comment: {
+              id,
+              comment: newComment
+          },
+          token: request.csrfToken()
+      }
+      response.render("editcomment.hbs", model)
+      return
+  }
+
+  const query = `
+      UPDATE
+          comments
+      SET
+          comment = ?
+      WHERE
+          id = ?
+  `
+  
+  const values =[newComment, id]
+  db.run(query,values, function(error){
+      if(error){
+          console.log(error, "15")
+      }else{
+          response.redirect("/blogposts/")
+      }
+  })
+})
 
 app.listen(3000)
