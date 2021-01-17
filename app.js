@@ -30,7 +30,7 @@ db.run(`
         question TEXT,
         date DATE,
         answer TEXT
-        )
+    )
 `)
 
 db.run(`
@@ -38,7 +38,7 @@ db.run(`
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         comment TEXT,
         blogpostID INTEGER
-        )
+    )
 `)
 //set storage engine
 const storage = multer.diskStorage({
@@ -79,6 +79,7 @@ function getBlogpostValidationErrors(title, article, file) {
   const validationErrors = []
   return validationErrors
 }
+
 app.use(express.static("static"))
 app.use(express.static("./public/file"))
 
@@ -114,21 +115,22 @@ app.get("/createblogpost", csrfProtection, function (request, response) {
 
 app.post("/createblogpost", csrfProtection, parseForm, function (request, response) {
 
+  
   upload(request, response, (error) => {
     if (error) {
-      console.log(error, "1")
+      errors.push("Something went wrong.")
     }
     else {
       const title = request.body.title
       const article = request.body.article
       const image = request.file.filename
-
+      const errors = getBlogpostValidationErrors(title, article, image)
         const query = ("INSERT INTO blogposts (title, article, image) VALUES (?, ?, ?)")
         const values = [title, article, image]
 
         db.run(query, values, function (error) {
           if (error) {
-            console.log(error, "2")
+            errors.push("Something went wrong fetching the data.")
           }
           else {
             response.redirect('/blogposts/' + this.lastID)
@@ -145,10 +147,11 @@ app.get("/updateblogpost/:id", csrfProtection, function (request, response) {
 
   const query = "SELECT * FROM blogposts WHERE id = ?"
   const values = [id]
+  const errors = getBlogpostValidationErrors(values)
 
   db.get(query, values, function (error, blogpost) {
     if (error) {
-      console.log(error, "3")
+      errors.push("Could not update blogpost.")
     } else {
       const model = {
         blogpost,
@@ -195,7 +198,7 @@ app.post("/updateblogpost/:id", csrfProtection, parseForm, function (request, re
 
   db.run(query, values, function (error) {
     if (error) {
-      console.log(error, "4")
+      errors.push("Can not update. Something went wrong in the database.")
     } else {
       response.redirect("/blogposts/" + id)
     }
@@ -288,13 +291,16 @@ app.post("/deleteblogpost/:id", csrfProtection, parseForm, function (request, re
 
   const query = "DELETE FROM blogposts WHERE id = ?"
   const values = [id]
+  
+  const errors = getBlogpostValidationErrors(values)
+
 
   db.run(query, values, function (error) {
-    if (error) {
 
-      console.log(error, "7")
-
-    } else {
+    if (!request.session.isLoggedIn) {
+      errors.push("You must be logged in to do that")
+    
+    }else {
       response.redirect("/blogposts")
     }
   })
@@ -330,7 +336,6 @@ app.get("/create-faq", csrfProtection, function(request,response){
 
 app.post("/create-faq", csrfProtection, parseForm, function(request,response){
   const question = request.body.question
-  console.log(question)
   
   const validationError = []
 
@@ -428,7 +433,7 @@ app.post("/updatefaq/:id", csrfProtection, parseForm, function(request,response)
       const validationError = []
 
       if(!request.session.isLoggedIn){
-          validationError.push("You have yo login.")
+          validationError.push("You have to login.")
       }
 
       if(0< validationError){
@@ -465,8 +470,9 @@ app.post("/updatefaq/:id", csrfProtection, parseForm, function(request,response)
 
 app.post("/deletefaq/:id", csrfProtection, parseForm, function(request,response){
       const id = request.params.id
+      validationErrors = []
       if(!request.session.isLoggedIn){
-          validationError.push("You have to login.")
+          validationErrors.push("You have to login.")
       }
       const query ="DELETE FROM faq WHERE id = ?"
       const values = [id]
@@ -501,16 +507,20 @@ app.get("/editcomment/:id", csrfProtection, parseForm, function(request, respons
     const query = "SELECT * FROM comments WHERE id = ?"
     const values = [id]
     db.get(query, values, function(error,comments){
-        if(error){
-            console.log(error, "11")
-        }else{
-            const model= {
-                comments,
-                token: request.csrfToken()
-            }
-            response.render("editcomment.hbs", model)
-        }
-    })
+      if(error){
+          console.log(error, "11")
+          const model = {
+            dbError:true
+          }
+      }else{
+          const model= {
+            dbError:false,
+            comments,
+            token: request.csrfToken()
+          }
+          response.render("editcomment.hbs", model)
+      }
+  })
 }
 
 })
@@ -557,5 +567,5 @@ app.post("/editcomment/:id", csrfProtection, parseForm, function(request,respons
       }
   })
 })
-//remove this comment
+
 app.listen(3000)

@@ -1,7 +1,7 @@
 <div class="block">
   <article class="message is-warning">
     <div class="message-header">
-      <p class="title is-4">{{blogpost.title}}</p>
+      <h1 class="title is-4">{{blogpost.title}}</h1>
     </div>
     <div class="message-body">
       <p class="content is-medium">
@@ -12,14 +12,14 @@
             <p>Cant display page right now, try again later</p>
             {{else}}
             {{#if blogpost}}
-            <img src="../{{blogpost.image}}" alt="something when trying to display the image">
+            <img src="../{{blogpost.image}}" alt="Blogpost image">
           </figure>
         </div>
         <div class="card-content">
           <div class="media">
             <div class="media-left">
               <figure class="image is-48x48">
-                <img src="http://www.pngall.com/wp-content/uploads/5/Profile-PNG-Images.png" alt="Cant display image">
+                <img src="http://www.pngall.com/wp-content/uploads/5/Profile-PNG-Images.png" alt="Default anonymous profile picture">
               </figure>
             </div>
             <div class="media-content">
@@ -30,7 +30,7 @@
 
           <div class="content">
             {{blogpost.article}}
-            <br>
+            <div></div>
             <time datetime="2016-1-1">11:09 PM - 1 Jan 2016</time>
             {{#if isLoggedIn}}
             <a href="/updateblogpost/{{blogpost.id}}">Update</a>
@@ -75,8 +75,6 @@
       <section class="hero is-dark mb-4">
         <div class="hero-body">
           <div class="container">
-            <h1 class="title">
-            </h1>
             <h2 class="subtitle">
               {{comment}}
             </h2>

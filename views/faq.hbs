@@ -2,13 +2,12 @@
     <div class="message-header">
     </div>
     <div class="message-body">
-        <p>
         <div class="block">
             <h1 class="title is-1">FAQ</h1>
             <p class="content is-medium">Here you can ask questions and wait for an answer.</p>
             <a class="button is-warning" href="/create-faq">Ask a question</a>
             {{#if dbError}}
-            <p>Oops! Something went wronf</p>
+            <p>Oops! Something went wrong</p>
             {{else}}
             {{#if faq.length}}
             <ul>
@@ -24,6 +23,9 @@
                                 </div>
                             </div>
                             {{/each}}
+                        </div>
+                    </div>
+                </div>
             </ul>
             {{else}}
             <div class="empty">
@@ -36,12 +38,5 @@
 
             {{/if}}
         </div>
-
-    </div>
-    </div>
-
-    </div>
-    </p>
     </div>
 </article>
-</div>
