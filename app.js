@@ -130,9 +130,14 @@ app.post("/createblogpost", csrfProtection, parseForm, function (request, respon
 
         db.run(query, values, function (error) {
           if (error) {
-            errors.push("Something went wrong fetching the data.")
+            const model={
+              dbError:true
+          }
           }
           else {
+            const model={
+              dbError:false
+          }
             response.redirect('/blogposts/' + this.lastID)
           }
         })
@@ -147,13 +152,15 @@ app.get("/updateblogpost/:id", csrfProtection, function (request, response) {
 
   const query = "SELECT * FROM blogposts WHERE id = ?"
   const values = [id]
-  const errors = getBlogpostValidationErrors(values)
 
   db.get(query, values, function (error, blogpost) {
     if (error) {
-      errors.push("Could not update blogpost.")
+      const model={
+        dbError:true
+    }
     } else {
       const model = {
+        dbError:false,
         blogpost,
         token: request.csrfToken()
       }
@@ -413,8 +420,12 @@ app.get("/updatefaq/:id", csrfProtection, function(request,response){
       db.get(query, values, function(error,faq){
           if(error){
               console.log(error, "11")
+              const model={
+                dbError:true
+            }
           }else{
               const model= {
+                  dbError:false,
                   faq,
                   token: request.csrfToken()
               }
@@ -478,10 +489,16 @@ app.post("/deletefaq/:id", csrfProtection, parseForm, function(request,response)
       const values = [id]
 
       db.run(query, values, function(error){
-          if(error){
-              console.log(error, "13")
-          }else{
-              response.redirect("/faq")
+        if(error){
+          console.log(error, "13")
+          const model={
+            dbError:true
+        }
+        }else{
+          const model={
+            dbError:false
+        }
+          response.redirect("/faq")
           }
       })
 })
@@ -492,8 +509,14 @@ app.post("/delete-comment/:id",function(request,response){
   const values=[id]
   db.run(queryDelete,values,function(error){
       if(error){
-          console.log(error)
+          console.log(error,"14")
+          const model={
+            dbError:true
+        }
       }else{
+        const model={
+          dbError:false
+      }
          response.redirect("/blogposts/") 
       }
   })
